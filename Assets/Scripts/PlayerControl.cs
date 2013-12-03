@@ -19,7 +19,8 @@ public class PlayerControl : MonoBehaviour {
 
 	/*  ========TODO========
 	 *  check obj type when pulling
-	 *  apply tangental force or velocity to pulled obj
+	 *  grabbed target doesn't move immediately after being parented
+	 *  make grabbed target move towards ship properly
 	 *  ====================
 	 */
 
@@ -45,6 +46,7 @@ public class PlayerControl : MonoBehaviour {
 	void Update () {
 
 		//screen wrap -------------  HOW THE FUCK DO POSITION CHANGE???
+		/*
 		if (rigidbody2D.transform.position.x > wrapMax.x) {
 			rigidbody2D.transform.position.x = wrap.x;
 		}
@@ -57,9 +59,11 @@ public class PlayerControl : MonoBehaviour {
 		if (rigidbody2D.transform.position.y < wrap.y) {
 			rigidbody2D.transform.position.y = wrapMax.y;
 		}
+		*/
 
 		//rotate ship
 		rigidbody2D.AddTorque(Input.GetAxis(axisName)*-rotationalForce);
+
 
 		if (rigidbody2D.angularVelocity > maxAngVel)
 			rigidbody2D.angularVelocity = maxAngVel;
@@ -70,6 +74,20 @@ public class PlayerControl : MonoBehaviour {
 		//calculate the direction the ship is currently facing
 		float rotInRads = transform.eulerAngles.z * Mathf.Deg2Rad;
 		Vector2 shipDir = new Vector2(Mathf.Cos (rotInRads), Mathf.Sin (rotInRads));
+
+
+
+		//angle that the asteroid will move if ship pulls it while spinning
+		float astrDirRad = -99999999999;
+		if (rigidbody2D.angularVelocity > 0)
+			astrDirRad = (transform.eulerAngles.z + 90)* Mathf.Deg2Rad;
+		else
+			astrDirRad = (transform.eulerAngles.z - 90)* Mathf.Deg2Rad;
+
+		Vector2 astrDir = Vector2.zero;
+		if (rigidbody2D.angularVelocity != 0)
+			astrDir = new Vector2(Mathf.Cos (astrDirRad), Mathf.Sin (astrDirRad));
+
 
 
 		//propel ship in the angle its facing
@@ -83,17 +101,22 @@ public class PlayerControl : MonoBehaviour {
 		//pull in asteroid towards ship
 		if (Input.GetKey (KeyCode.Space)) {
 			//should check if it's an asteroid type when we get them
+			Debug.DrawRay (transform.position, shipDir);
 			if (!hasTarget){
 				grabTarget = Physics2D.Raycast (transform.position, shipDir);
 				if (grabTarget.collider != null){
-					Debug.DrawRay (transform.position, shipDir);
+					//Debug.DrawRay (transform.position, shipDir);
+					grabTarget.rigidbody.angularVelocity = 0;
+					grabTarget.rigidbody.velocity = Vector2.zero;
+					grabTarget.transform.parent = transform;
 					hasTarget = true;
 				}
 			}
 			else{
-				grabTarget.rigidbody.AddForce(-shipDir * pullForce);
-				//missing tangent force on target if ship has angular velocity
-				//so the target currently doesn't spin with the ship
+			    
+				//grabTarget.rigidbody.AddForce(-shipDir * pullForce);
+				//Debug.DrawRay (grabTarget.transform.position, astrDir);
+				float dist2Target = Vector2.Distance(transform.position, grabTarget.transform.position);
 			}
 
 		}
@@ -102,6 +125,7 @@ public class PlayerControl : MonoBehaviour {
 		//shoot the asteroid being grabbed
 		if (Input.GetKeyUp(KeyCode.Space)){
 			if (hasTarget){
+				grabTarget.transform.parent = null;
 				grabTarget.rigidbody.velocity = Vector2.zero;
 				grabTarget.rigidbody.angularVelocity = 0;
 				grabTarget.rigidbody.AddTorque(shootSpinForce);
@@ -118,7 +142,6 @@ public class PlayerControl : MonoBehaviour {
 			rigidbody2D.angularVelocity = 0;
 			rigidbody2D.velocity = Vector2.zero;
 		}
-
-
+		
 	}
 }
