@@ -22,7 +22,9 @@ public class PlayerControl : MonoBehaviour {
 
 	//for playtest purposes
 	//used to teleport last shot object back with 'Q' 
-	private RaycastHit2D debugTargetHolder; 
+	private RaycastHit2D debugTargetHolder;
+
+	private float LEFT, RIGHT, TOP, BOTTOM, WIDTH, HEIGHT;
 
 	/*  ========TODO========
 	 *  check obj type when pulling
@@ -47,6 +49,14 @@ public class PlayerControl : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		// Find Borders
+		LEFT = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0)).x;
+		RIGHT = Camera.main.ViewportToWorldPoint(new Vector3(1,0,0)).x;
+		TOP = Camera.main.ViewportToWorldPoint(new Vector3(0,0,0)).y;
+		BOTTOM = Camera.main.ViewportToWorldPoint(new Vector3(0,1,0)).y;
+		
+		WIDTH = RIGHT - LEFT;
+		HEIGHT = BOTTOM - TOP;
 	}
 
 	// Update is called once per frame
@@ -87,7 +97,7 @@ public class PlayerControl : MonoBehaviour {
 
 
 		//screen wrap
-		if (rigidbody2D.transform.position.x > wrapMax.x) {
+		/*if (rigidbody2D.transform.position.x > wrapMax.x) {
 			rigidbody2D.transform.position = new Vector3(wrap.x, transform.position.y);
 		}
 		if (rigidbody2D.transform.position.x < wrap.x) {
@@ -98,7 +108,18 @@ public class PlayerControl : MonoBehaviour {
 		}
 		if (rigidbody2D.transform.position.y < wrap.y) {
 			rigidbody2D.transform.position = new Vector3(transform.position.y, wrapMax.y);
-		}
+		}*/
+
+		// using this version of wrapping for accuracy purposes
+		// have ship wrap when it reaches the edge of the screen
+		if (transform.position.x < LEFT) // reaches left border
+			transform.position += new Vector3(WIDTH, 0, 0); // move to right border
+		if (transform.position.x > RIGHT) // reaches right border
+			transform.position -= new Vector3(WIDTH, 0, 0); // move to left border
+		if (transform.position.y < TOP) // reaches top border
+			transform.position += new Vector3(0, HEIGHT, 0); // move to bottom border
+		if (transform.position.y > BOTTOM) // reaches bottom border
+			transform.position -= new Vector3(0, HEIGHT, 0);; // move to top border
 		
 		
 		//rotate ship
