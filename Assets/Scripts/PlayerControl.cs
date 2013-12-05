@@ -32,6 +32,7 @@ public class PlayerControl : MonoBehaviour {
 	 *  check obj type when pulling
 	 *  grabbed target doesn't move immediately after being parented
 	 *  make grabbed target move towards ship properly
+	 *  try to implement springJoint2d
 	 *  ====================
 	 */
 
@@ -141,7 +142,7 @@ public class PlayerControl : MonoBehaviour {
 		if (transform.position.y < TOP) // reaches top border
 			transform.position += new Vector3(0, HEIGHT, 0); // move to bottom border
 		if (transform.position.y > BOTTOM) // reaches bottom border
-			transform.position -= new Vector3(0, HEIGHT, 0);; // move to top border
+			transform.position -= new Vector3(0, HEIGHT, 0); // move to top border
 		
 		
 		//rotate ship
@@ -191,5 +192,10 @@ public class PlayerControl : MonoBehaviour {
 		}
 		*/
 		
+	}
+
+	void OnCollisionEnter2D(Collision2D coll) {
+		GUIscript.isDead = true;
+		Destroy(this.gameObject);
 	}
 }

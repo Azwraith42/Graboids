@@ -8,10 +8,17 @@ public class AsteroidControl : MonoBehaviour {
 	public int maxAsteroids = 8;
 	public float maxInitialVelocity;
 
-	public float spawnTimer = 10;
+	public float spawnTimer;
 	private float spawnTime = 0;
 	
 	private float LEFT, RIGHT, TOP, BOTTOM, WIDTH, HEIGHT;
+
+	/*  ========TODO========
+	 *  score for different sizes
+	 *  spawn checks overlapping
+	 *  ====================
+	 */
+
 
 	// Use this for initialization
 	void Start () {
@@ -22,6 +29,8 @@ public class AsteroidControl : MonoBehaviour {
 		
 		WIDTH = RIGHT - LEFT;
 		HEIGHT = BOTTOM - TOP;
+
+		numAsteroids = 0;
 	}
 	
 	// Update is called once per frame
@@ -36,6 +45,6 @@ public class AsteroidControl : MonoBehaviour {
 			numAsteroids++;
 		}	
 		else
-			spawnTime += Time.deltaTime;
+			spawnTime += Time.deltaTime * (Time.timeSinceLevelLoad / 10);
 	}
 }

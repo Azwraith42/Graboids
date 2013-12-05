@@ -10,6 +10,15 @@ public class AsteroidInfo : MonoBehaviour {
 	
 	private float LEFT, RIGHT, TOP, BOTTOM, WIDTH, HEIGHT;
 
+	/*  ========TODO========
+	 *  asteroid division
+	 *  different sizes
+	 *  asteroid hp -> visual "cracking"
+	 *  better wrapping
+	 *  ====================
+	 */
+
+
 	// Use this for initialization
 	void Start () {
 		// Find Borders
@@ -36,7 +45,7 @@ public class AsteroidInfo : MonoBehaviour {
 		if (transform.position.y < TOP) // reaches top border
 			transform.position += new Vector3(0, HEIGHT, 0); // move to bottom border
 		if (transform.position.y > BOTTOM) // reaches bottom border
-			transform.position -= new Vector3(0, HEIGHT, 0);; // move to top border
+			transform.position -= new Vector3(0, HEIGHT, 0); // move to top border
 
 	}
 
@@ -55,6 +64,7 @@ public class AsteroidInfo : MonoBehaviour {
 			{
 				Destroy(gameObject);
 				AsteroidControl.numAsteroids--;
+				GUIscript.score += 5;
 			}
 			// apply damage
 

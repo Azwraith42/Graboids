@@ -3,33 +3,45 @@ using System.Collections;
 
 public class GUIscript : MonoBehaviour {
 
-	int Score = 0;
-	int asts = 1;
+	public static int score;
+	public static int asts;
+	public static bool isDead;
 
 	//GUI
 	void OnGUI(){
-		GUILayout.Label ("Score: " + Score);
+		GUILayout.Label ("Score: " + score);
 		GUILayout.BeginArea (new Rect (Screen.width / 2 - 35, 10, 150, 30));
-		GUILayout.Label ("Asteroids found: " + asts);
+		GUILayout.Label ("Asteroids Detected: " + AsteroidControl.numAsteroids);
 		GUILayout.EndArea ();
+
+		if (isDead){
+			GUILayout.BeginArea (new Rect (Screen.width / 2 - 35, Screen.height/2, 150, 50));
+			GUILayout.Label ("GAME OVER\nPress 'q' to restart");
+			GUILayout.EndArea ();
+		}
 	}
 
 
 	// Use this for initialization
 	void Start () {
-	
+		score = 0;
+		asts = 0;
+		isDead = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-	
+		// press q to restart the level
+		if (Input.GetKey (KeyCode.Q)) {
+			Application.LoadLevel(Application.loadedLevel);
+		}	
 	}
 
-	void IncScore(int ammount){
-		Score += ammount;
+	public void IncScore(int amount){
+		score += amount;
 	}
 
-	void IncAsts(){
+	public void IncAsts(){
 		asts += 1;
 	}
 }
