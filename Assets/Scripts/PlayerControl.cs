@@ -76,7 +76,7 @@ public class PlayerControl : MonoBehaviour {
 			//should check if it's an asteroid type when we get them
 			Debug.DrawRay (transform.position, shipDir);
 			if (!hasTarget){
-				grabTarget = Physics2D.Raycast (transform.position, shipDir);
+				grabTarget = Physics2D.Raycast (transform.position, shipDir, Mathf.Infinity, 1<<9);
 				if (grabTarget.collider != null){
 					debugTargetHolder = grabTarget;
 					//Debug.DrawRay (transform.position, shipDir);
