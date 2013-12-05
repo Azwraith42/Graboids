@@ -11,6 +11,8 @@ public class PlayerControl : MonoBehaviour {
 	public float pullForce;
 	public float shootForce;
 	public float shootSpinForce;
+	public float gunRange;
+	//public float minAstrDist;
 
 	public Vector3 wrap = new Vector3();
 	public Vector3 wrapMax = new Vector3();
@@ -18,7 +20,7 @@ public class PlayerControl : MonoBehaviour {
 	private const float wrapOffset = 1.5f;
 	private string axisName = "Horizontal";
 	private RaycastHit2D grabTarget;
-	private bool hasTarget = false;
+	//private bool hasTarget = false;
 
 	//for playtest purposes
 	//used to teleport last shot object back with 'Q' 
@@ -63,37 +65,57 @@ public class PlayerControl : MonoBehaviour {
 	void Update () {
 
 
-
+		//if (grabTarget.collider == null)
+		//	hasTarget = false;
 
 		//calculate the direction the ship is currently facing
 		float rotInRads = transform.eulerAngles.z * Mathf.Deg2Rad;
 		Vector2 shipDir = new Vector2(Mathf.Cos (rotInRads), Mathf.Sin (rotInRads));
 
 
-
+		/*
 		//pull in asteroid towards ship
 		if (Input.GetKey (KeyCode.Space)) {
 			//should check if it's an asteroid type when we get them
-			Debug.DrawRay (transform.position, shipDir);
+			Debug.DrawRay (transform.position, shipDir*gunRange);
 			if (!hasTarget){
-				grabTarget = Physics2D.Raycast (transform.position, shipDir, Mathf.Infinity, 1<<9);
+				grabTarget = Physics2D.Raycast (transform.position, shipDir, gunRange, 1<<9);
 				if (grabTarget.collider != null){
 					debugTargetHolder = grabTarget;
-					//Debug.DrawRay (transform.position, shipDir);
 					grabTarget.rigidbody.angularVelocity = 0;
-					grabTarget.rigidbody.velocity = Vector2.zero;
-					grabTarget.transform.parent = transform;
+					grabTarget.rigidbody.velocity  = Vector2.zero;
+					//grabTarget.rigidbody.velocity = rigidbody2D.velocity;
 					hasTarget = true;
 				}
 			}
 			else{
-				//grabTarget.rigidbody.AddForce(-shipDir * pullForce);
-				//Debug.DrawRay (grabTarget.transform.position, astrDir);
+				Debug.DrawRay (grabTarget.transform.position, shipDir);
 				float dist2Target = Vector2.Distance(transform.position, grabTarget.transform.position);
+				if(dist2Target <= minAstrDist){
+					grabTarget.rigidbody.velocity = rigidbody2D.velocity;
+					grabTarget.transform.parent = transform;
+					//if(grabTarget.transform.parent == null)
+						//grabTarget.transform.parent = transform;
+				}
+				else{
+					Vector2 pullDir = grabTarget.transform.position - transform.position;
+					grabTarget.rigidbody.AddForce(-pullDir * pullForce);
+				}
 			}
 
 		}
+		*/
+		//pull in asteroid towards ship
+		if (Input.GetKeyDown(KeyCode.Space)) {
+			Debug.DrawRay (transform.position, shipDir*gunRange);
+			grabTarget = Physics2D.Raycast (transform.position, shipDir, gunRange, 1<<9);
+				if (grabTarget.collider != null){
+					grabTarget.rigidbody.angularVelocity = shootSpinForce;
 
+					float dist2Target = Vector2.Distance(transform.position, grabTarget.transform.position);
+					grabTarget.rigidbody.AddForce(shipDir * shootForce / dist2Target);
+				}
+		}
 
 
 		//screen wrap
@@ -123,8 +145,9 @@ public class PlayerControl : MonoBehaviour {
 		
 		
 		//rotate ship
-		rigidbody2D.AddTorque(Input.GetAxis(axisName)*-rotationalForce);
-		//rigidbody2D.angularVelocity = Input.GetAxis(axisName)*-maxAngVel;
+		//if (!(hasTarget && grabTarget.transform.parent == null))
+			rigidbody2D.AddTorque(Input.GetAxis(axisName)*-rotationalForce);
+
 		
 		if (rigidbody2D.angularVelocity > maxAngVel)
 			rigidbody2D.angularVelocity = maxAngVel;
@@ -134,12 +157,13 @@ public class PlayerControl : MonoBehaviour {
 		
 		//propel ship in the angle its facing
 		if (Input.GetKey(KeyCode.UpArrow))
-			rigidbody2D.AddForce (shipDir * moveForce);
+			//if (!(hasTarget && grabTarget.transform.parent == null))
+					rigidbody2D.AddForce (shipDir * moveForce);
 		
 		if (rigidbody2D.velocity.magnitude > maxVel)
 			rigidbody2D.velocity = rigidbody2D.velocity.normalized * maxVel;
 
-
+		/*
 		//shoot the asteroid being grabbed
 		if (Input.GetKeyUp(KeyCode.Space)){
 			if (hasTarget){
@@ -151,9 +175,9 @@ public class PlayerControl : MonoBehaviour {
 				hasTarget = false;
 			}
 		}
+		*/
 
-
-
+		/*
 		//for play test: resetting ship loc
 		if (Input.GetKey (KeyCode.Q)) {
 			transform.position = -2*Vector2.right;
@@ -165,6 +189,7 @@ public class PlayerControl : MonoBehaviour {
 				debugTargetHolder.rigidbody.angularVelocity = 0;
 			}
 		}
+		*/
 		
 	}
 }

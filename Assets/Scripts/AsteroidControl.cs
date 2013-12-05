@@ -30,6 +30,7 @@ public class AsteroidControl : MonoBehaviour {
 		{
 			// spawn asteroid
 			Rigidbody2D asteroidClone = (Rigidbody2D) Instantiate(asteroid, new Vector3(LEFT, Random.value * HEIGHT, 0), Quaternion.identity);
+			asteroidClone.gameObject.layer = 9;
 			asteroidClone.velocity = Random.insideUnitCircle * maxInitialVelocity;
 			spawnTime = 0;
 			numAsteroids++;
