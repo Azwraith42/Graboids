@@ -11,12 +11,12 @@ public class GUIscript : MonoBehaviour {
 	void OnGUI(){
 		GUILayout.Label ("Score: " + score);
 		GUILayout.BeginArea (new Rect (Screen.width / 2 - 35, 10, 150, 30));
-		GUILayout.Label ("Asteroids Detected: " + AsteroidControl.numAsteroids);
+			GUILayout.Label ("Asteroids Detected: " + AsteroidControl.numAsteroids);
 		GUILayout.EndArea ();
 
 		if (isDead){
 			GUILayout.BeginArea (new Rect (Screen.width / 2 - 35, Screen.height/2, 150, 50));
-			GUILayout.Label ("GAME OVER\nPress 'q' to restart");
+				GUILayout.Label ("GAME OVER\nPress 'q' to restart");
 			GUILayout.EndArea ();
 		}
 	}
