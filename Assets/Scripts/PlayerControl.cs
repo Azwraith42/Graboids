@@ -106,17 +106,20 @@ public class PlayerControl : MonoBehaviour {
 
 		}
 		*/
+
+		//draws the range of the gun
+		//Debug.DrawRay (transform.position, shipDir*gunRange);
+
 		//pull in asteroid towards ship
 		if (Input.GetKeyDown(KeyCode.Space)) {
-			Debug.DrawRay (transform.position, shipDir*gunRange);
 			grabTarget = Physics2D.Raycast (transform.position, shipDir, gunRange, 1<<9);
 				if (grabTarget.collider != null){
-					grabTarget.rigidbody.angularVelocity = shootSpinForce;
-
 					float dist2Target = Vector2.Distance(transform.position, grabTarget.transform.position);
 					grabTarget.rigidbody.AddForce(shipDir * shootForce / dist2Target);
+					grabTarget.rigidbody.AddTorque(shootSpinForce / dist2Target );
 				}
 		}
+
 
 
 		//screen wrap
@@ -132,6 +135,7 @@ public class PlayerControl : MonoBehaviour {
 		if (rigidbody2D.transform.position.y < wrap.y) {
 			rigidbody2D.transform.position = new Vector3(transform.position.y, wrapMax.y);
 		}*/
+
 
 		// using this version of wrapping for accuracy purposes
 		// have ship wrap when it reaches the edge of the screen
