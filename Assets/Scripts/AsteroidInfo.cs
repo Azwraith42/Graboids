@@ -74,7 +74,8 @@ public class AsteroidInfo : MonoBehaviour {
 				rigidbody2D.angularVelocity = 0;
 				astrSize = Size.Medium;
 				health = (int)Size.Medium;
-
+				
+				EventManager.instance.QueueEvent(new LargeAsteroid());
 				GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
 				asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
 				break;
@@ -88,6 +89,7 @@ public class AsteroidInfo : MonoBehaviour {
 				astrSize = Size.Small;
 				health = (int)Size.Small;
 
+				EventManager.instance.QueueEvent(new SmallAsteroid());
 				GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
 				asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
 				break;
@@ -95,6 +97,7 @@ public class AsteroidInfo : MonoBehaviour {
 
 			case Size.Small:
 			{
+				EventManager.instance.QueueEvent(new SmallAsteroid());
 				AsteroidControl.numAsteroids--;
 				Destroy(gameObject);
 				break;
