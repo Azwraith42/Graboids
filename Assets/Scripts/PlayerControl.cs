@@ -201,5 +201,6 @@ public class PlayerControl : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D coll) {
 		GUIscript.isDead = true;
 		Destroy(this.gameObject);
+		EventManager.instance.QueueEvent (new ShipDestroy ());
 	}
 }
