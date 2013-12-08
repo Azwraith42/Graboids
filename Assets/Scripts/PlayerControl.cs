@@ -17,32 +17,21 @@ public class PlayerControl : MonoBehaviour {
 	public Vector3 wrap = new Vector3();
 	public Vector3 wrapMax = new Vector3();
 
+	public GameObject death_particle;
+
 	private const float wrapOffset = 1.5f;
 	private string axisName = "Horizontal";
 	private RaycastHit2D grabTarget;
-	//private bool hasTarget = false;
-
-	//for playtest purposes
-	//used to teleport last shot object back with 'Q' 
-	private RaycastHit2D debugTargetHolder;
 
 	private float LEFT, RIGHT, TOP, BOTTOM, WIDTH, HEIGHT;
 
 	/*  ========TODO========
-	 *  check obj type when pulling
-	 *  grabbed target doesn't move immediately after being parented
-	 *  make grabbed target move towards ship properly
-	 *  try to implement springJoint2d
 	 *  ====================
 	 */
 
 
 	//awake to guarentee it happends first
 	void Awake(){
-//		var wrapmin:Vector3=Camera.main.ScreenToWorldPoint(Vector3(0,0,Camera.main.transform.position.y));
-//		wrap=Vector3(wrapmin.x-4,wrapmin.z-4);
-//		var wrapmax:Vector3=Camera.main.ScreenToWorldPoint(Vector3(Screen.width,Screen.height,Camera.main.transform.position.y));
-//		wrapMax=Vector3(wrapmax.x+4,wrapmax.z+4);
 
 		Vector3 wrapmin = Camera.main.ScreenToWorldPoint (new Vector3 (0, Camera.main.transform.position.y, 0));
 		wrap = new Vector3(wrapmin.x-wrapOffset,wrapmin.y-wrapOffset, 0);
@@ -65,47 +54,13 @@ public class PlayerControl : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-
-		//if (grabTarget.collider == null)
-		//	hasTarget = false;
+		
 
 		//calculate the direction the ship is currently facing
 		float rotInRads = transform.eulerAngles.z * Mathf.Deg2Rad;
 		Vector2 shipDir = new Vector2(Mathf.Cos (rotInRads), Mathf.Sin (rotInRads));
 
 
-		/*
-		//pull in asteroid towards ship
-		if (Input.GetKey (KeyCode.Space)) {
-			//should check if it's an asteroid type when we get them
-			Debug.DrawRay (transform.position, shipDir*gunRange);
-			if (!hasTarget){
-				grabTarget = Physics2D.Raycast (transform.position, shipDir, gunRange, 1<<9);
-				if (grabTarget.collider != null){
-					debugTargetHolder = grabTarget;
-					grabTarget.rigidbody.angularVelocity = 0;
-					grabTarget.rigidbody.velocity  = Vector2.zero;
-					//grabTarget.rigidbody.velocity = rigidbody2D.velocity;
-					hasTarget = true;
-				}
-			}
-			else{
-				Debug.DrawRay (grabTarget.transform.position, shipDir);
-				float dist2Target = Vector2.Distance(transform.position, grabTarget.transform.position);
-				if(dist2Target <= minAstrDist){
-					grabTarget.rigidbody.velocity = rigidbody2D.velocity;
-					grabTarget.transform.parent = transform;
-					//if(grabTarget.transform.parent == null)
-						//grabTarget.transform.parent = transform;
-				}
-				else{
-					Vector2 pullDir = grabTarget.transform.position - transform.position;
-					grabTarget.rigidbody.AddForce(-pullDir * pullForce);
-				}
-			}
-
-		}
-		*/
 
 		//draws the range of the gun
 		//Debug.DrawRay (transform.position, shipDir*gunRange);
@@ -119,23 +74,7 @@ public class PlayerControl : MonoBehaviour {
 					grabTarget.rigidbody.AddTorque(shootSpinForce / dist2Target );
 				}
 		}
-
-
-
-		//screen wrap
-		/*if (rigidbody2D.transform.position.x > wrapMax.x) {
-			rigidbody2D.transform.position = new Vector3(wrap.x, transform.position.y);
-		}
-		if (rigidbody2D.transform.position.x < wrap.x) {
-			rigidbody2D.transform.position = new Vector3(wrapMax.x, transform.position.y);
-		}
-		if (rigidbody2D.transform.position.y > wrapMax.y) {
-			rigidbody2D.transform.position = new Vector3(transform.position.y, wrap.y);
-		}
-		if (rigidbody2D.transform.position.y < wrap.y) {
-			rigidbody2D.transform.position = new Vector3(transform.position.y, wrapMax.y);
-		}*/
-
+		
 
 		// using this version of wrapping for accuracy purposes
 		// have ship wrap when it reaches the edge of the screen
@@ -150,55 +89,28 @@ public class PlayerControl : MonoBehaviour {
 		
 		
 		//rotate ship
-		//if (!(hasTarget && grabTarget.transform.parent == null))
-			rigidbody2D.AddTorque(Input.GetAxis(axisName)*-rotationalForce);
+		rigidbody2D.AddTorque(Input.GetAxis(axisName)*-rotationalForce);
 
-		
+
+		//propel ship in the angle its facing
+		if (Input.GetKey(KeyCode.UpArrow))
+			//if (!(hasTarget && grabTarget.transform.parent == null))
+			rigidbody2D.AddForce (shipDir * moveForce);
+
+		//enforce maximum values
 		if (rigidbody2D.angularVelocity > maxAngVel)
 			rigidbody2D.angularVelocity = maxAngVel;
 		else if (rigidbody2D.angularVelocity < -maxAngVel)
 			rigidbody2D.angularVelocity = -maxAngVel;
 
-		
-		//propel ship in the angle its facing
-		if (Input.GetKey(KeyCode.UpArrow))
-			//if (!(hasTarget && grabTarget.transform.parent == null))
-					rigidbody2D.AddForce (shipDir * moveForce);
-		
 		if (rigidbody2D.velocity.magnitude > maxVel)
 			rigidbody2D.velocity = rigidbody2D.velocity.normalized * maxVel;
-
-		/*
-		//shoot the asteroid being grabbed
-		if (Input.GetKeyUp(KeyCode.Space)){
-			if (hasTarget){
-				grabTarget.transform.parent = null;
-				grabTarget.rigidbody.velocity = Vector2.zero;
-				grabTarget.rigidbody.angularVelocity = 0;
-				grabTarget.rigidbody.AddTorque(shootSpinForce);
-				grabTarget.rigidbody.AddForce(shipDir * shootForce);
-				hasTarget = false;
-			}
-		}
-		*/
-
-		/*
-		//for play test: resetting ship loc
-		if (Input.GetKey (KeyCode.Q)) {
-			transform.position = -2*Vector2.right;
-			rigidbody2D.angularVelocity = 0;
-			rigidbody2D.velocity = Vector2.zero;
-			if (debugTargetHolder.collider != null){
-				debugTargetHolder.transform.position = Vector3.zero;
-				debugTargetHolder.rigidbody.velocity = Vector2.zero;
-				debugTargetHolder.rigidbody.angularVelocity = 0;
-			}
-		}
-		*/
 		
+
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
+		GameObject explosion_particle = (GameObject) Instantiate(death_particle, transform.position, Quaternion.identity);
 		GUIscript.isDead = true;
 		Destroy(this.gameObject);
 		EventManager.instance.QueueEvent (new ShipDestroy ());

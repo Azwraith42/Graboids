@@ -16,6 +16,8 @@ public class AsteroidInfo : MonoBehaviour {
 	public float medScale = 0.2f;
 	public float smallScale = 0.15f;
 
+	public GameObject death_particle;
+
 	/*  ========TODO========
 	 *  asteroid division
 	 *  different sizes
@@ -62,6 +64,7 @@ public class AsteroidInfo : MonoBehaviour {
 
 	void split()
 	{
+		GameObject explosion_particle = (GameObject) Instantiate(death_particle, transform.position, Quaternion.identity);
 		switch (astrSize) 
 		{
 			case Size.Large:
