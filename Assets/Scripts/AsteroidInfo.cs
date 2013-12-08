@@ -2,13 +2,19 @@
 using System.Collections;
 
 public class AsteroidInfo : MonoBehaviour {
-	public enum Size {Small, Medium, Large}
+	public enum Size {Small=1, Medium=2, Large=4}
+	public Size astrSize = Size.Large;
 
 	public float maxVel, breakVel;
 
-	public int health;
+	public int health = (int)Size.Large;
 	
 	private float LEFT, RIGHT, TOP, BOTTOM, WIDTH, HEIGHT;
+
+
+	public float maxInitialVelocity = 1;
+	public float medScale = 0.2f;
+	public float smallScale = 0.15f;
 
 	/*  ========TODO========
 	 *  asteroid division
@@ -47,7 +53,53 @@ public class AsteroidInfo : MonoBehaviour {
 		if (transform.position.y > BOTTOM) // reaches bottom border
 			transform.position -= new Vector3(0, HEIGHT, 0); // move to top border
 
+		if (health <= 0)
+			split ();
+
 	}
+
+
+
+	void split()
+	{
+		switch (astrSize) 
+		{
+			case Size.Large:
+			{
+				transform.localScale = new Vector2(medScale, medScale);
+				rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
+				rigidbody2D.angularVelocity = 0;
+				astrSize = Size.Medium;
+				health = (int)Size.Medium;
+
+				//GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
+				//asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
+				break;
+			}
+
+			case Size.Medium:
+			{
+				transform.localScale = new Vector2(smallScale, smallScale);
+				rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
+				rigidbody2D.angularVelocity = 0;
+				astrSize = Size.Small;
+				health = (int)Size.Small;
+
+				//GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
+				//asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
+				break;
+			}
+
+			case Size.Small:
+			{
+				AsteroidControl.numAsteroids--;
+				Destroy(gameObject);
+				break;
+			}
+
+		}
+	}
+
 
 	// Asteroid takes damage and bounces or breaks when hit hard enough
 	void OnCollisionEnter2D(Collision2D coll) {
@@ -60,15 +112,15 @@ public class AsteroidInfo : MonoBehaviour {
 		else if (coll.gameObject.tag == "Asteroid")
 		{
 			// check relative velocity/force
-			if (coll.relativeVelocity.magnitude > breakVel)
+			if (coll.relativeVelocity.magnitude >= breakVel)
 			{
-				Destroy(gameObject);
-				AsteroidControl.numAsteroids--;
+				var collidingAstr = coll.gameObject.GetComponent<AsteroidInfo>();
+				//asteriod splits in update if health <= 0
+				health = health - (int)collidingAstr.astrSize;
 				GUIscript.score += 5;
-			}
-			// apply damage
 
-			// break up or destroy asteroid if applicable
+			}
+
 		}
 
 	}
