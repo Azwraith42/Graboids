@@ -72,8 +72,8 @@ public class AsteroidInfo : MonoBehaviour {
 				astrSize = Size.Medium;
 				health = (int)Size.Medium;
 
-				//GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
-				//asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
+				GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
+				asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
 				break;
 			}
 
@@ -85,8 +85,8 @@ public class AsteroidInfo : MonoBehaviour {
 				astrSize = Size.Small;
 				health = (int)Size.Small;
 
-				//GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
-				//asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
+				GameObject asteroidClone = (GameObject)Instantiate(gameObject, transform.position, Quaternion.identity);
+				asteroidClone.rigidbody2D.velocity = Random.insideUnitCircle * maxInitialVelocity;
 				break;
 			}
 
@@ -102,7 +102,8 @@ public class AsteroidInfo : MonoBehaviour {
 
 
 	// Asteroid takes damage and bounces or breaks when hit hard enough
-	void OnCollisionEnter2D(Collision2D coll) {
+	void OnCollisionEnter2D(Collision2D coll) 
+	{
 
 		// asteroid hits player ship, destroy player
 		if (coll.gameObject.name == "ship")
