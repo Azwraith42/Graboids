@@ -71,6 +71,7 @@ public class PlayerControl : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Space) && (shootTime + shootCooldown < Time.time)) {
 			GameObject bullet = (GameObject)Instantiate(bullet_prefab, transform.position, Quaternion.identity);
 			bullet.rigidbody2D.AddForce(shipDir * shootForce);
+			EventManager.instance.QueueEvent(new Shoot());
 			shootTime = Time.time;
 		}
 		
