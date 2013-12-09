@@ -48,12 +48,12 @@ public class SoundCrontroller : MonoBehaviour, IEventListener {
 	}
 
 	public bool onMove(IEvent e){
-		Debug.Log("Key Down");
+		//Debug.Log("Key Down");
 		MoveSources[0].Play();
 		return true;
 	}
 	public bool onStop(IEvent e){
-		Debug.Log("Key Up");
+		//Debug.Log("Key Up");
 		MoveSources[0].Stop();
 		return true;
 	}
