@@ -32,6 +32,11 @@ public class MainMenuScript : MonoBehaviour {
 				//Debug.Log("WoW so press");
 			}
 
+			if (GUILayout.Button ("Credits")) {
+				Application.LoadLevel("Credits");
+				//Debug.Log("WoW so press");
+			}
+
 		GUILayout.EndArea ();
 
 //		//GUILayout.BeginArea (new Rect (Screen.width / 2 - 50 , Screen.height / 2 + 50, 100, 30));
