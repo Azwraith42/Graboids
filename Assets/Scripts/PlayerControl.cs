@@ -28,6 +28,8 @@ public class PlayerControl : MonoBehaviour {
 
 	private float shootTime = 0;
 	public float shootCooldown = 0.5f;
+	
+	private KongregateScript kongScript;
 
 	/*  ========TODO========
 	 *  ====================
@@ -55,6 +57,10 @@ public class PlayerControl : MonoBehaviour {
 		HEIGHT = BOTTOM - TOP;
 
 		Physics2D.IgnoreLayerCollision(10, 10);
+		
+		GameObject kongObj = GameObject.Find("KongregateAPI");
+		if(kongObj != null)
+			kongScript = kongObj.GetComponent<KongregateScript>();
 	}
 
 	// Update is called once per frame
@@ -123,6 +129,7 @@ public class PlayerControl : MonoBehaviour {
 		if (coll.gameObject.tag == "Asteroid") {
 			GameObject explosion_particle = (GameObject)Instantiate (death_particle, transform.position, Quaternion.identity);
 			GUIscript.isDead = true;
+			kongScript.GameOver();
 			Destroy (this.gameObject);
 			EventManager.instance.QueueEvent (new Stop());
 			EventManager.instance.QueueEvent (new ShipDestroy ());
