@@ -43,6 +43,6 @@ public class KongregateScript : MonoBehaviour {
 
 	// Game over, upload stats
 	public void GameOver()	{
-		Application.ExternalCall("highScore", GUIscript.score); 
+		kongAPI.SubmitStats("High Score", GUIscript.score); 
 	}
 }
