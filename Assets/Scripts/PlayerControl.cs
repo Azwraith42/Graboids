@@ -123,6 +123,7 @@ public class PlayerControl : MonoBehaviour {
 			GameObject explosion_particle = (GameObject)Instantiate (death_particle, transform.position, Quaternion.identity);
 			GUIscript.isDead = true;
 			Destroy (this.gameObject);
+			EventManager.instance.QueueEvent (new Stop());
 			EventManager.instance.QueueEvent (new ShipDestroy ());
 		}
 	}
