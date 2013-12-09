@@ -18,12 +18,16 @@ public class PlayerControl : MonoBehaviour {
 	public Vector3 wrapMax = new Vector3();
 
 	public GameObject death_particle;
+	public GameObject bullet_prefab;
 
 	private const float wrapOffset = 1.5f;
 	private string axisName = "Horizontal";
 	private RaycastHit2D grabTarget;
 
 	private float LEFT, RIGHT, TOP, BOTTOM, WIDTH, HEIGHT;
+
+	private float shootTime = 0;
+	public float shootCooldown = 0.5f;
 
 	/*  ========TODO========
 	 *  ====================
@@ -49,6 +53,8 @@ public class PlayerControl : MonoBehaviour {
 		
 		WIDTH = RIGHT - LEFT;
 		HEIGHT = BOTTOM - TOP;
+
+		Physics2D.IgnoreLayerCollision(10, 10);
 	}
 
 	// Update is called once per frame
@@ -61,18 +67,11 @@ public class PlayerControl : MonoBehaviour {
 		Vector2 shipDir = new Vector2(Mathf.Cos (rotInRads), Mathf.Sin (rotInRads));
 
 
-
-		//draws the range of the gun
-		//Debug.DrawRay (transform.position, shipDir*gunRange);
-
-		//pull in asteroid towards ship
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			grabTarget = Physics2D.Raycast (transform.position, shipDir, gunRange, 1<<9);
-				if (grabTarget.collider != null){
-					float dist2Target = Vector2.Distance(transform.position, grabTarget.transform.position);
-					grabTarget.rigidbody.AddForce(shipDir * shootForce / dist2Target);
-					grabTarget.rigidbody.AddTorque(shootSpinForce / dist2Target );
-				}
+		//shoot bullet
+		if (Input.GetKeyDown(KeyCode.Space) && (shootTime + shootCooldown < Time.time)) {
+			GameObject bullet = (GameObject)Instantiate(bullet_prefab, transform.position, Quaternion.identity);
+			bullet.rigidbody2D.AddForce(shipDir * shootForce);
+			shootTime = Time.time;
 		}
 		
 
@@ -94,7 +93,6 @@ public class PlayerControl : MonoBehaviour {
 
 		//propel ship in the angle its facing
 		if (Input.GetKey(KeyCode.UpArrow))
-			//if (!(hasTarget && grabTarget.transform.parent == null))
 			rigidbody2D.AddForce (shipDir * moveForce);
 
 		//enforce maximum values
@@ -110,9 +108,11 @@ public class PlayerControl : MonoBehaviour {
 	}
 
 	void OnCollisionEnter2D(Collision2D coll) {
-		GameObject explosion_particle = (GameObject) Instantiate(death_particle, transform.position, Quaternion.identity);
-		GUIscript.isDead = true;
-		Destroy(this.gameObject);
-		EventManager.instance.QueueEvent (new ShipDestroy ());
+		if (coll.gameObject.tag == "Asteroid") {
+			GameObject explosion_particle = (GameObject)Instantiate (death_particle, transform.position, Quaternion.identity);
+			GUIscript.isDead = true;
+			Destroy (this.gameObject);
+			EventManager.instance.QueueEvent (new ShipDestroy ());
+		}
 	}
 }
