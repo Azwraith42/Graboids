@@ -90,6 +90,17 @@ public class PlayerControl : MonoBehaviour {
 		//rotate ship
 		rigidbody2D.AddTorque(Input.GetAxis(axisName)*-rotationalForce);
 
+	
+			//Play sound for movement---------------------------------------------------------------------
+		if(Input.GetKeyDown(KeyCode.UpArrow)){
+			//Debug.Log("Up move play");
+			EventManager.instance.QueueEvent (new Move());
+		}
+
+		if(Input.GetKeyUp(KeyCode.UpArrow)){
+			//Debug.Log("up move stop");
+			EventManager.instance.QueueEvent (new Stop());
+		}
 
 		//propel ship in the angle its facing
 		if (Input.GetKey(KeyCode.UpArrow))
